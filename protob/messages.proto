@@ -99,6 +99,12 @@ enum MessageType {
 	MessageType_DebugLinkMemory = 111 [(wire_debug_out) = true];
 	MessageType_DebugLinkMemoryWrite = 112 [(wire_debug_in) = true];
 	MessageType_DebugLinkFlashErase = 113 [(wire_debug_in) = true];
+	MessageType_WavesSignTx = 114 [(wire_in) = true];
+	MessageType_WavesTxRequest = 115 [(wire_out) = true];
+	MessageType_WavesTxAck = 116 [(wire_in) = true];
+	MessageType_WavesSignMessage = 117 [(wire_in) = true];
+	MessageType_WavesVerifyMessage = 118 [(wire_in) = true];
+	MessageType_WavesMessageSignature = 119 [(wire_out) = true];
 }
 
 ////////////////////
@@ -962,6 +968,88 @@ message CosiSign {
  */
 message CosiSignature {
 	optional bytes signature = 1;		// Signature
+}
+
+////////////////////
+// Waves messages //
+////////////////////
+
+/**
+ * Request: Ask device to sign transaction
+ * All fields are optional from the protocol's point of view. Each field defaults to value `0` if missing.
+ * Note: the first at most 1024 bytes of data MUST be transmitted as part of this message.
+ * @next PassphraseRequest
+ * @next PinMatrixRequest
+ * @next EthereumTxRequest
+ * @next Failure
+ */
+message WavesSignTx {
+	repeated uint32 address_n = 1;			// BIP-32 path to derive the key from master node
+	optional bytes nonce = 2;			// <=256 bit unsigned big endian
+	optional bytes gas_price = 3;			// <=256 bit unsigned big endian (in wei)
+	optional bytes gas_limit = 4;			// <=256 bit unsigned big endian
+	optional bytes to = 5;				// 160 bit address hash
+	optional bytes value = 6;			// <=256 bit unsigned big endian (in wei)
+	optional bytes data_initial_chunk = 7;		// The initial data chunk (<= 1024 bytes)
+	optional uint32 data_length = 8;		// Length of transaction payload
+	optional uint32 chain_id = 9;			// Chain Id for EIP 155
+}
+
+/**
+ * Response: Device asks for more data from transaction payload, or returns the signature.
+ * If data_length is set, device awaits that many more bytes of payload.
+ * Otherwise, the signature_* fields contain the computed transaction signature. All three fields will be present.
+ * @prev EthereumSignTx
+ * @next EthereumTxAck
+ */
+message WavesTxRequest {
+	optional uint32 data_length = 1;		// Number of bytes being requested (<= 1024)
+	optional uint32 signature_v = 2;		// Computed signature (recovery parameter, limited to 27 or 28)
+	optional bytes signature_r = 3;			// Computed signature R component (256 bit)
+	optional bytes signature_s = 4;			// Computed signature S component (256 bit)
+}
+
+/**
+ * Request: Transaction payload data.
+ * @prev EthereumTxRequest
+ * @next EthereumTxRequest
+ */
+message WavesTxAck {
+	optional bytes data_chunk = 1;			// Bytes from transaction payload (<= 1024 bytes)
+}
+
+////////////////////////////////////////
+// Ethereum: Message signing messages //
+////////////////////////////////////////
+
+/**
+ * Request: Ask device to sign message
+ * @next EthereumMessageSignature
+ * @next Failure
+ */
+message WavesSignMessage {
+	repeated uint32 address_n = 1;				// BIP-32 path to derive the key from master node
+	required bytes message = 2;				// message to be signed
+}
+
+/**
+ * Request: Ask device to verify message
+ * @next Success
+ * @next Failure
+ */
+message WavesVerifyMessage {
+	optional bytes address = 1;				// address to verify
+	optional bytes signature = 2;				// signature to verify
+	optional bytes message = 3;				// message to verify
+}
+
+/**
+ * Response: Signed message
+ * @prev EthereumSignMessage
+ */
+message WavesMessageSignature {
+	optional bytes address = 1;				// address used to sign the message
+	optional bytes signature = 2;				// signature of the message
 }
 
 /////////////////////////////////////////////////////////////
