@@ -1039,7 +1039,7 @@ message WavesSignMessage {
  * @next Failure
  */
 message WavesVerifyMessage {
-	optional bytes address = 1;				// address to verify
+	optional string address = 1;				// address to verify
 	optional bytes signature = 2;				// signature to verify
 	optional bytes message = 3;				// message to verify
 }
@@ -1049,7 +1049,7 @@ message WavesVerifyMessage {
  * @prev WavesSignMessage
  */
 message WavesMessageSignature {
-	optional bytes address = 1;				// address used to sign the message
+	optional string address = 1;				// address used to sign the message
 	optional bytes signature = 2;				// signature of the message
 }
 
