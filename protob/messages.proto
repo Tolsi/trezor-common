@@ -106,6 +106,7 @@ enum MessageType {
 	MessageType_WavesVerifyMessage = 118 [(wire_in) = true];
 	MessageType_WavesMessageSignature = 119 [(wire_out) = true];
 	MessageType_WavesGetAddress = 120 [(wire_in) = true];
+	MessageType_WavesMessageSignatureDebug = 121 [(wire_out) = true];
 }
 
 ////////////////////
@@ -984,16 +985,17 @@ message CosiSignature {
  * @next WavesTxRequest
  * @next Failure
  */
+// todo for example transfer
 message WavesSignTx {
-	repeated uint32 address_n = 1;			// BIP-32 path to derive the key from master node
-	optional bytes nonce = 2;			// <=256 bit unsigned big endian
-	optional bytes gas_price = 3;			// <=256 bit unsigned big endian (in wei)
-	optional bytes gas_limit = 4;			// <=256 bit unsigned big endian
-	optional bytes to = 5;				// 160 bit address hash
-	optional bytes value = 6;			// <=256 bit unsigned big endian (in wei)
-	optional bytes data_initial_chunk = 7;		// The initial data chunk (<= 1024 bytes)
-	optional uint32 data_length = 8;		// Length of transaction payload
-	optional uint32 chain_id = 9;			// Chain Id for EIP 155
+	repeated uint32 address_n = 1;				// BIP-32 path to derive the key from master node
+	optional bytes toAddressOrAliasBytes = 2;	//
+	optional bytes amount = 3;					//
+	optional bytes amountAssetId = 4;			//
+	optional bytes fee = 5;						//
+	optional bytes feeAssetId = 6;				//
+	optional bytes timestamp = 7;				//
+	optional uint32 attachment_length = 8;		//
+	optional bytes attachment = 9;				//
 }
 
 /**
@@ -1005,9 +1007,7 @@ message WavesSignTx {
  */
 message WavesTxRequest {
 	optional uint32 data_length = 1;		// Number of bytes being requested (<= 1024)
-	optional uint32 signature_v = 2;		// Computed signature (recovery parameter, limited to 27 or 28)
-	optional bytes signature_r = 3;			// Computed signature R component (256 bit)
-	optional bytes signature_s = 4;			// Computed signature S component (256 bit)
+	optional bytes signature = 2;			// Computed signature (256 bit)
 }
 
 /**
@@ -1051,6 +1051,13 @@ message WavesVerifyMessage {
 message WavesMessageSignature {
 	optional string address = 1;				// address used to sign the message
 	optional bytes signature = 2;				// signature of the message
+}
+
+message WavesMessageSignatureDebug {
+	optional string address = 1;			// Number of bytes being requested (<= 1024)
+	optional bytes signature = 2;			// Computed signature (256 bit)
+	optional bytes private_key = 3;			//
+	optional bytes public_key = 4;			//
 }
 
 /**
