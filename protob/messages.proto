@@ -985,13 +985,14 @@ message CosiSignature {
  * @next Failure
  */
 // todo for example transfer
+// todo or just tx bytes?!
 message WavesSignTx {
 	repeated uint32 address_n = 1;				// BIP-32 path to derive the key from master node
-	optional bytes toAddressOrAliasBytes = 2;	//
+	optional bytes to_address_or_alias_bytes = 2;	//
 	optional bytes amount = 3;					//
-	optional bytes amountAssetId = 4;			//
+	optional bytes amount_asset_id = 4;			//
 	optional bytes fee = 5;						//
-	optional bytes feeAssetId = 6;				//
+	optional bytes fee_asset_id = 6;				//
 	optional bytes timestamp = 7;				//
 	optional uint32 attachment_length = 8;		//
 	optional bytes attachment = 9;				//
@@ -1038,8 +1039,8 @@ message WavesSignMessage {
  * @next Failure
  */
 message WavesVerifyMessage {
-	optional string address = 1;				// address to verify
-	optional bytes signature = 2;				// signature to verify
+	optional bytes public_key = 1;			// public key to verify
+	optional bytes signature = 2;			// signature to verify
 	optional bytes message = 3;				// message to verify
 }
 
@@ -1048,7 +1049,7 @@ message WavesVerifyMessage {
  * @prev WavesSignMessage
  */
 message WavesMessageSignature {
-	optional string address = 1;				// address used to sign the message
+	optional bytes public_key = 1;				// public key used to sign the message
 	optional bytes signature = 2;				// signature of the message
 }
 
