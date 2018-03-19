@@ -103,9 +103,8 @@ enum MessageType {
 	MessageType_WavesTxRequest = 115 [(wire_out) = true];
 	MessageType_WavesTxAck = 116 [(wire_in) = true];
 	MessageType_WavesSignMessage = 117 [(wire_in) = true];
-	MessageType_WavesVerifyMessage = 118 [(wire_in) = true];
-	MessageType_WavesMessageSignature = 119 [(wire_out) = true];
-	MessageType_WavesGetAddress = 120 [(wire_in) = true];
+	MessageType_WavesMessageSignature = 118 [(wire_out) = true];
+	MessageType_WavesGetAddress = 119 [(wire_in) = true];
 }
 
 ////////////////////
@@ -1031,17 +1030,6 @@ message WavesTxAck {
 message WavesSignMessage {
 	repeated uint32 address_n = 1;				// BIP-32 path to derive the key from master node
 	required bytes message = 2;				// message to be signed
-}
-
-/**
- * Request: Ask device to verify message
- * @next Success
- * @next Failure
- */
-message WavesVerifyMessage {
-	optional bytes public_key = 1;			// public key to verify
-	optional bytes signature = 2;			// signature to verify
-	optional bytes message = 3;				// message to verify
 }
 
 /**
